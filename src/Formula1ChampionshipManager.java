@@ -14,6 +14,8 @@ import java.util.Scanner;
 
 
 public class Formula1ChampionshipManager implements ChampionshipManager {
+    Connection connection = null;
+    ResultSet res = null;
     public void startJDBC() {
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -26,16 +28,16 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
 
     String[] x = {"First", "Second", "Third", "Fourth","Fifth","Sixth","Seventh","Eighth","Ninth","Tenth"};
     int[] points = {25,18,15,12,10,8,6,4,2,1};
-    int score = 0;
+    int score = 0, count = 0;
     int[] new_pos = new int[10];
 
     Scanner sc = new Scanner(System.in);
     Random rand = new Random();
-    Connection connection = null;
     String name;
     String id;
     String team;
     String location;
+    int pos;
 
     @Override
     public void drivers() {
@@ -58,6 +60,8 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
                 break;
 
             case 3: /* Change the driver for the existing team **/
+                System.out.print("Enter the team: ");
+                team = sc.next();
                 System.out.print("Enter the id of the driver: ");
                 id = sc.next();
                 System.out.print("Enter the name: ");
@@ -80,6 +84,8 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
                 break;
 
             case 6: /* Add a race **/
+                Race1();
+                update2();
                 break;
 
             case 7: /* Saving in a file all the information entered by the user so far **/
@@ -114,11 +120,9 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
     public void update(){
         try{
             Statement smt = connection.createStatement();
-            smt.executeUpdate();
+            smt.executeUpdate("update driver set ID = "+id+",Name = "+name+",Location = "+location+"where Team = "+team);
         }
-        catch (ClassNotFoundException e) {
-            System.out.println("JDBC Driver not found: " + e.getMessage());
-        } catch (Exception e) {
+       catch (Exception e) {
             System.out.println("Database connection error: " + e.getMessage());
         }
     }
@@ -156,15 +160,24 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
 
     public void update2()
     {
+
         try{
             Statement smt = connection.createStatement();
-            for (int i = 0; i < 10; i++)
-            {
-
+            res = smt.executeQuery("Select count(ID) from driver");
+            while (res.next()){
+                count = res.getInt("count(ID)");
             }
-            for(int i = 0; i < 10; i++)
+            for (int i = 0; i < count; i++)
             {
+                new_pos[i]= rand.nextInt(1,11);
+            }
+            int i = 0;
+            res = smt.executeQuery("Select * from driver");
+            while (res.next() && i < count){
 
+                pos++;
+
+                i++;
             }
         }
         catch (Exception e) {

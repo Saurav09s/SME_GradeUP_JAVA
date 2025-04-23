@@ -5,10 +5,12 @@
  **/
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Scanner;
 
 public class Formula1Driver extends Driver {
+    Connection connection = null;
     public void startJDBC() {
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -18,7 +20,6 @@ public class Formula1Driver extends Driver {
             System.out.println("Database connection error: " + e.getMessage());
         }
     }
-    Connection connection = null;
     String[] x = {"First", "Second", "Third", "Fourth","Fifth","Sixth","Seventh","Eighth","Ninth","Tenth"};
     int[] pos = new int[10];
     int[] points = {25,18,15,12,10,8,6,4,2,1};
@@ -39,7 +40,6 @@ public class Formula1Driver extends Driver {
             Statement smt = connection.createStatement();
             smt.executeUpdate("insert into driver (ID,Name,Location,Team) values("+id+","+name+","+location+","+team+")");
             smt.executeUpdate("insert into pos(ID)values("+id+")");
-            connection.close();
         }
         catch (Exception e) {
             System.out.println("Database connection error: " + e.getMessage());
@@ -63,6 +63,7 @@ public class Formula1Driver extends Driver {
                 score += pos[i] * points[i];
             }
             smt.executeUpdate("update driver set Score = "+score+" where ID = "+id);
+
         }
        catch (Exception e) {
             System.out.println("Database connection error: " + e.getMessage());

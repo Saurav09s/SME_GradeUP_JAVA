@@ -6,6 +6,7 @@
 public class main {
     public static void main(String[] args) {
         Formula1Driver ob = new Formula1Driver();
+        ob.startJDBC();
         ob.details();
         ob.statistics();
     }
