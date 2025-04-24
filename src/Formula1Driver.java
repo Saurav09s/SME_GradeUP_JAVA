@@ -5,7 +5,6 @@
  **/
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Scanner;
 
@@ -37,6 +36,8 @@ public class Formula1Driver extends Driver {
             location = sc.next();
             System.out.print("Enter the team name: ");
             team = sc.next();
+            Formula1ChampionshipManager oj = new Formula1ChampionshipManager();
+            oj.cars(team);
             Statement smt = connection.createStatement();
             smt.executeUpdate("insert into driver (ID,Name,Location,Team) values("+id+","+name+","+location+","+team+")");
             smt.executeUpdate("insert into pos(ID)values("+id+")");
@@ -53,17 +54,17 @@ public class Formula1Driver extends Driver {
             System.out.println("Enter how many times they have achieved a certain position: ");
             for (int i = 0; i < 10; i++)
             {
-                int m = i+1;
-                System.out.print("No of "+m+"position:");
-                pos[i] = sc.nextInt();
+                System.out.print("Enter the date of the race: ");
+                date = sc.next();
+                pos[i] = 1;
                 smt.executeUpdate("update pos set "+x[i]+" = "+pos[i]+" where ID = "+id);
+                smt.executeUpdate("insert into drace(ID,date)values("+id+","+date+")");
             }
             for(int i = 0; i < 10; i++)
             {
                 score += pos[i] * points[i];
             }
             smt.executeUpdate("update driver set Score = "+score+" where ID = "+id);
-
         }
        catch (Exception e) {
             System.out.println("Database connection error: " + e.getMessage());

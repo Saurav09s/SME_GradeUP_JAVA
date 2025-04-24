@@ -1,4 +1,4 @@
 public interface ChampionshipManager {
     void drivers();
-    void cars();
+    void cars(String t);
 }

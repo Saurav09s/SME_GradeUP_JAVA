@@ -9,6 +9,7 @@ abstract class Driver {
     String name;                /* Name of the driver **/
     String location;/* Location Of the driver **/
     String team;
+    String date;
     int score;
     abstract void details();
     abstract void statistics(); /* Statistics of the driver **/

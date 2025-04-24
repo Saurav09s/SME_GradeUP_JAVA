@@ -16,6 +16,7 @@ import java.util.Scanner;
 public class Formula1ChampionshipManager implements ChampionshipManager {
     Connection connection = null;
     ResultSet res = null;
+    ResultSet nes = null;
     public void startJDBC() {
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -37,6 +38,9 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
     String id;
     String team;
     String location;
+    String date;
+    int k = 0;
+    String[] company = new String[100];
     int pos;
 
     @Override
@@ -56,6 +60,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
             case 2:/* Delete a driver from Formula1 championship. **/
                 System.out.print("Enter Your ID: ");
                 id = sc.next();
+                startJDBC();
                 delete();
                 break;
 
@@ -70,20 +75,24 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
                 location = sc.next();
                 System.out.print("Enter the team name: ");
                 team = sc.next();
+                startJDBC();
                 update();
                 break;
 
             case 4: /* Display the statistics of a particular driver **/
                 System.out.print("Enter the id of the driver: ");
                 id = sc.next();
+                startJDBC();
                 display1();
                 break;
 
-            case 5: /* Display the complete driver table **/
+            case 5:/* Display the complete driver table **/
+                startJDBC();
                 display2();
                 break;
 
             case 6: /* Add a race **/
+                startJDBC();
                 Race1();
                 update2();
                 break;
@@ -100,9 +109,10 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
     }
 
     @Override
-    public void cars() {
+    public void cars(String t) {
         System.out.print("Enter the name of the team: ");
-        String Name = sc.next();
+        company[k] = t;
+        k++;
     }
 
     public void delete()
@@ -126,6 +136,8 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
             System.out.println("Database connection error: " + e.getMessage());
         }
     }
+
+
     public void display1()
     {
         try{
@@ -136,6 +148,9 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
             System.out.println("Database connection error: " + e.getMessage());
         }
     }
+
+
+
     public void display2()
     {
         try{
@@ -146,21 +161,11 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
             System.out.println("Database connection error: " + e.getMessage());
         }
     }
+
+
+
     public void Race1()
     {
-        for (int i = 0; i < 10; i++)
-        {
-            new_pos[i] = rand.nextInt(1,11);
-        }
-    }
-    public void Race2()
-    {
-
-    }
-
-    public void update2()
-    {
-
         try{
             Statement smt = connection.createStatement();
             res = smt.executeQuery("Select count(ID) from driver");
@@ -169,15 +174,39 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
             }
             for (int i = 0; i < count; i++)
             {
-                new_pos[i]= rand.nextInt(1,11);
+                new_pos[i] = rand.nextInt(1,11);
             }
+        }
+        catch (Exception e) {
+            System.out.println("Database connection error: " + e.getMessage());
+        }
+    }
+
+    public void update2()
+    {
+
+        try{
+            Statement smt = connection.createStatement();
             int i = 0;
-            res = smt.executeQuery("Select * from driver");
+            res = smt.executeQuery("Select ID from driver");
             while (res.next() && i < count){
-
-                pos++;
-
+                String e = res.getString("ID");
+                smt.executeUpdate("update pos set "+x[new_pos[i]]+" = "+(x[new_pos[i]]+"+"+1)+" where ID = "+e);
                 i++;
+                System.out.print("Enter the date of the race: ");
+                date = sc.next();
+                smt.executeUpdate("insert into drace(ID,date)values("+e+","+date+")");
+                int j = 0;
+                while (j<10)
+                {
+                    nes = smt.executeQuery("Select"+x[j]+"from driver where ID = "+e);
+                    while (nes.next()){
+                        pos = nes.getInt(x[j]);
+                    }
+                    score += pos * points[j];
+                    j++;
+                }
+                smt.executeUpdate("update driver set Score = "+score+" where ID = "+e);
             }
         }
         catch (Exception e) {
