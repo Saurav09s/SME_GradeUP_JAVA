@@ -4,6 +4,10 @@
  * Mobile No. - +91 6203820253
  **/
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -14,6 +18,59 @@ import java.util.Scanner;
 
 
 public class Formula1ChampionshipManager implements ChampionshipManager {
+
+
+    Formula1Driver ob = new Formula1Driver();
+    public void dataStore(){
+        try {
+            File f = new File("C:\\Users\\saura\\IdeaProjects\\SME_GradeUP_JAVA\\Record.txt");
+            if(f.createNewFile())
+            {
+                System.out.println("File created..");
+            }
+            else {
+                System.out.println("File already exist..");
+                storedata();
+            }
+        }
+        catch (Exception e){
+            System.out.print(e.getMessage());
+        }
+    }
+
+    public void storedata()
+    {
+        try {
+            try (FileWriter w = new FileWriter("C:\\Users\\saura\\IdeaProjects\\SME_GradeUP_JAVA\\Record.txt")) {
+                {
+                    w.write("Name = " + name);
+                    w.write("ID = " + id);
+                    w.write("Location = " + location);
+                    w.write("Team =" + team);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+    public void readData()
+    {
+
+        try (FileReader fileReader = new FileReader("C:\\Users\\saura\\IdeaProjects\\SME_GradeUP_JAVA\\Record.txt");
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     Connection connection = null;
     ResultSet res = null;
     ResultSet nes = null;
@@ -51,7 +108,6 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
         switch (ch)
         {
             case 1:/* Create a new driver **/
-                Formula1Driver ob = new Formula1Driver();
                 ob.startJDBC();
                 ob.details();
                 ob.statistics();
@@ -98,9 +154,11 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
                 break;
 
             case 7: /* Saving in a file all the information entered by the user so far **/
+                dataStore();
                 break;
 
             case 8: /* Read the information from a file and starts writing from the last character**/
+                readData();
                 break;
 
             case 9:

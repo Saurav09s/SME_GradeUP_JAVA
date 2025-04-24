@@ -3,13 +3,34 @@
  * Email-Id - sauravsuman1020@outlook.com
  * Mobile No. - +91 6203820253
  **/
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Scanner;
 
 public class Formula1Driver extends Driver {
+    public void dataStore(){
+        try {
+            File f = new File("C:\\Users\\saura\\IdeaProjects\\SME_GradeUP_JAVA\\Record.txt");
+            if(f.createNewFile())
+            {
+                System.out.println("File created..");
+            }
+            else {
+                System.out.println("File already exist..");
+                storedata();
+            }
+        }
+        catch (Exception e){
+            System.out.print(e.getMessage());
+        }
+    }
+
+
     Connection connection = null;
+
+
     public void startJDBC() {
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -19,12 +40,16 @@ public class Formula1Driver extends Driver {
             System.out.println("Database connection error: " + e.getMessage());
         }
     }
+
+
     String[] x = {"First", "Second", "Third", "Fourth","Fifth","Sixth","Seventh","Eighth","Ninth","Tenth"};
     int[] pos = new int[10];
     int[] points = {25,18,15,12,10,8,6,4,2,1};
     Scanner sc = new Scanner(System.in);
+
+
     @Override
-    void details() {
+    public void details() {
         score = 0;
         try {
             System.out.println("Connection successful!");
@@ -65,10 +90,43 @@ public class Formula1Driver extends Driver {
                 score += pos[i] * points[i];
             }
             smt.executeUpdate("update driver set Score = "+score+" where ID = "+id);
+            dataStore();
         }
        catch (Exception e) {
             System.out.println("Database connection error: " + e.getMessage());
         }
+    }
 
+    public void storedata()
+    {
+        try {
+                try (FileWriter w = new FileWriter("C:\\Users\\saura\\IdeaProjects\\SME_GradeUP_JAVA\\Record.txt")) {
+                    {
+                        w.write("Name = " + name);
+                        w.write("ID = " + id);
+                        w.write("Location = " + location);
+                        w.write("Team =" + team);
+                        w.write("Score = " + score);
+                    }
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void readData()
+    {
+
+        try (FileReader fileReader = new FileReader("C:\\Users\\saura\\IdeaProjects\\SME_GradeUP_JAVA\\Record.txt");
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
