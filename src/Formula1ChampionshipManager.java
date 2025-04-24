@@ -103,16 +103,33 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
             case 8: /* Read the information from a file and starts writing from the last character**/
                 break;
 
+            case 9:
+                try {
+                    connection.close();
+                }
+                catch (Exception e){
+                    System.out.print(e.getMessage());
+                }
+                break;
+
             default:
                 System.out.println("Wrong Choice");
         }
     }
 
     @Override
-    public void cars(String t) {
-        System.out.print("Enter the name of the team: ");
-        company[k] = t;
-        k++;
+    public void cars(String t,String iid) {
+        try{
+            startJDBC();
+            Statement smt = connection.createStatement();
+            company[k] = t;
+            k++;
+            smt.executeUpdate("insert into car (ID,Name) values("+iid+","+t+")");
+        }
+        catch (Exception e) {
+            System.out.println("Database connection error: " + e.getMessage());
+        }
+
     }
 
     public void delete()
@@ -120,7 +137,6 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
         try{
             Statement smt = connection.createStatement();
             smt.executeUpdate("delete from driver where id ="+id);
-            connection.close();
         }
         catch (Exception e) {
             System.out.println("Database connection error: " + e.getMessage());
@@ -142,7 +158,17 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
     {
         try{
             Statement smt = connection.createStatement();
-            smt.executeUpdate("select * from driver where ID ="+id);
+            res = smt.executeQuery("select * from driver join drace on driver."+id+"= drace."+id);
+            System.out.print("ID\tName\tTeam\tScore\tDate");
+            while (res.next())
+            {
+                String w = res.getString("ID");
+                String x = res.getString("Name");
+                String y = res.getString("Team");
+                int z = res.getInt("Score");
+                String v = res.getString("date");
+                System.out.print(w+"\t"+x+"\t"+y+"\t"+z+"\t"+v);
+            }
         }
        catch (Exception e) {
             System.out.println("Database connection error: " + e.getMessage());
@@ -155,7 +181,16 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
     {
         try{
             Statement smt = connection.createStatement();
-            smt.executeUpdate("select * from driver");
+            res = smt.executeQuery("select * from driver");
+            System.out.print("ID\tName\tTeam\tScore");
+            while (res.next())
+            {
+                String w = res.getString("ID");
+                String x = res.getString("Name");
+                String y = res.getString("Team");
+                int z = res.getInt("Score");
+                System.out.print(w+"\t"+x+"\t"+y+"\t"+z);
+            }
         }
         catch (Exception e) {
             System.out.println("Database connection error: " + e.getMessage());
@@ -192,7 +227,6 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
             while (res.next() && i < count){
                 String e = res.getString("ID");
                 smt.executeUpdate("update pos set "+x[new_pos[i]]+" = "+(x[new_pos[i]]+"+"+1)+" where ID = "+e);
-                i++;
                 System.out.print("Enter the date of the race: ");
                 date = sc.next();
                 smt.executeUpdate("insert into drace(ID,date)values("+e+","+date+")");
@@ -207,6 +241,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager {
                     j++;
                 }
                 smt.executeUpdate("update driver set Score = "+score+" where ID = "+e);
+                i++;
             }
         }
         catch (Exception e) {

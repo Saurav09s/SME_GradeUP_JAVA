@@ -37,7 +37,7 @@ public class Formula1Driver extends Driver {
             System.out.print("Enter the team name: ");
             team = sc.next();
             Formula1ChampionshipManager oj = new Formula1ChampionshipManager();
-            oj.cars(team);
+            oj.cars(team,id);
             Statement smt = connection.createStatement();
             smt.executeUpdate("insert into driver (ID,Name,Location,Team) values("+id+","+name+","+location+","+team+")");
             smt.executeUpdate("insert into pos(ID)values("+id+")");
